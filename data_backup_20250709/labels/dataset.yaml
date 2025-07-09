@@ -1,0 +1,5 @@
+names:
+  0: pothole
+path: C:\Users\anike\OneDrive\Desktop\opencv python\AI-Pothole-Detector\data\labeled
+train: images/train
+val: images/val

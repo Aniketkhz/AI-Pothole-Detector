@@ -1,0 +1,7 @@
+﻿# dataset.yaml
+train: C:/Users/anike/OneDrive/Desktop/opencv python/AI-Pothole-Detector/data/train/images
+val: C:/Users/anike/OneDrive/Desktop/opencv python/AI-Pothole-Detector/data/val/images
+
+# Classes
+nc: 1
+names: ['pothole']
