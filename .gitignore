@@ -1,0 +1,19 @@
+﻿# Byte-compiled / cached / generated files
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.cache
+runs/
+*.pt
+*.onnx
+*.jpg
+*.jpeg
+*.png
+*.mp4
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+venv/
+env/
