@@ -4,17 +4,17 @@ from tqdm import tqdm
 import os
 import sys
 
-# Force tqdm to work in PowerShell
-os.environ["PYTHONUNBUFFERED"] = "1"  # Disable output buffering
 
-# Fix for progress bars in PowerShell
+os.environ["PYTHONUNBUFFERED"] = "1"  
+
+
 def force_tqdm():
     import functools
     tqdm.__init__ = functools.partialmethod(tqdm.__init__, file=sys.stderr)
 
 force_tqdm()
 
-# Paths
+
 base_dir = Path(r"C:\Users\anike\AI-Pothole-Detector")
 dataset_yaml = base_dir / "data" / "dataset.yaml"
 weights = base_dir / "yolov8n.pt"

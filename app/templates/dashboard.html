@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Pothole Detection Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .camera-feed { width: 640px; height: 480px; border: 2px solid #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Pothole Detection</h1>
+        <img src="{{ url_for('video_feed') }}" class="camera-feed">
+        <p>Detection running on model: {{ model_name }}</p>
+    </div>
+</body>
+</html>
