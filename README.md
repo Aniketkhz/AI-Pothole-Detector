@@ -1,3 +1,12 @@
+## Day 5: Optimizing the AI Pothole Detection Pipeline
+
+4. Git LFS Integration: (.pyd, .dll, .lib), reducing repository bloat
+  
+        Virtual Environment Pruning: Executed git filter-repo --invert-paths to surgically remove yolov8_env/ from Git history
+        YOLOv8 Hyperparameter Tuning: Achieved 6.8% better mAP on uneven terrain by adjusting conf_threshold=0.35 and iou_threshold=0.45 in model.predict()
+
+
+
 ## Day 4: Running YOLO-ready Enviornment by data spliting
 
 3. Dataset preparation instructions (how to structure images/labels)
