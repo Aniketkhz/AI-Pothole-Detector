@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Results</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin-top: 30px; }
+        img { border: 1px solid #ddd; margin: 10px; max-width: 500px; }
+        a { display: inline-block; margin-top: 20px; color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>Detection Results</h1>
+    <div>
+        <h3>Original Image:</h3>
+        <img src="{{ url_for('static', filename=original_img.split('static/')[1]) }}">
+    </div>
+    <div>
+        <h3>Processed Image:</h3>
+        <img src="{{ url_for('static', filename=result_img.split('static/')[1]) }}">
+    </div>
+    <a href="/">← Upload Another Image</a>
+</body>
+</html>
