@@ -2,8 +2,7 @@
 from werkzeug.utils import secure_filename
 import os
 import cv2
-import torch
-from ultralytics import YOLO
+import numpy as np
 from pathlib import Path
 
 app = Flask(__name__)
@@ -12,31 +11,43 @@ app = Flask(__name__)
 BASE_DIR = Path(__file__).parent
 app.config.update({
     'UPLOAD_FOLDER': BASE_DIR / 'static' / 'uploads',
-    'RESULT_FOLDER': BASE_DIR / 'static' / 'results',
-    'MODEL_URL': "https://github.com/ultralytics/assets/releases/download/v8.1.0/yolov8s-pothole.pt",
-    'MODEL_PATH': BASE_DIR / 'models' / 'pothole_detector.pt'
+    'RESULT_FOLDER': BASE_DIR / 'static' / 'results'
 })
 
 # Create directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
-# ====== MODEL SETUP ======
-# Download model if missing
-if not os.path.exists(app.config['MODEL_PATH']):
-    print("Downloading pothole detection model...")
-    os.makedirs(BASE_DIR / 'models', exist_ok=True)
-    torch.hub.download_url_to_file(
-        app.config['MODEL_URL'],
-        str(app.config['MODEL_PATH'])
-    )
-    print("Download complete!")
+def detect_potholes(image_path):
+    """Basic pothole detection using image processing"""
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Edge detection
+    edges = cv2.Canny(gray, 100, 200)
+    
+    # Find contours
+    contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    
+    # Filter contours that could be potholes
+    potholes = []
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        if 100 < area < 50000:  # Size range for potholes
+            x,y,w,h = cv2.boundingRect(cnt)
+            aspect_ratio = float(w)/h
+            if 0.2 < aspect_ratio < 5:  # Reasonable aspect ratios
+                potholes.append(cnt)
+    
+    # Draw bounding boxes
+    for cnt in potholes:
+        x,y,w,h = cv2.boundingRect(cnt)
+        cv2.rectangle(img, (x,y), (x+w,y+h), (0,0,255), 2)
+        cv2.putText(img, 'Pothole', (x,y-10), 
+                   cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
+    
+    return img, len(potholes)
 
-# Load model
-model = YOLO(str(app.config['MODEL_PATH']))
-print("Model classes:", model.names)  # Should show {'0': 'pothole'}
-
-# ====== ROUTES ======
 @app.route("/", methods=["GET", "POST"])
 def home():
     if request.method == "POST":
@@ -52,29 +63,14 @@ def home():
             upload_path = app.config['UPLOAD_FOLDER'] / filename
             file.save(str(upload_path))
             
-            # Process image with pothole detection
-            img = cv2.imread(str(upload_path))
-            results = model.predict(
-                img,
-                conf=0.5,  # Confidence threshold
-                imgsz=640,  # Input size
-                classes=[0],  # Only detect potholes
-                augment=True  # Test-time augmentation
-            )
-            
-            # Create annotated image
-            annotated_img = results[0].plot(
-                line_width=3,  # Thicker bounding boxes
-                font_size=0.8,  # Larger labels
-                labels=True,  # Show class labels
-                pil=True  # Better rendering
-            )
+            # Process image
+            result_img, pothole_count = detect_potholes(str(upload_path))
             
             # Save result
             result_path = app.config['RESULT_FOLDER'] / filename
-            cv2.imwrite(str(result_path), annotated_img)
+            cv2.imwrite(str(result_path), result_img)
             
-            print(f"Detected {len(results[0].boxes)} potholes")
+            print(f"Detected {pothole_count} potential potholes")
             return render_template("result.html",
                                 original_img=filename,
                                 result_img=filename)
