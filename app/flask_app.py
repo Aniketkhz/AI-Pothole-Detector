@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 from pathlib import Path
+from flask import send_from_directory
 
 app = Flask(__name__)
 
@@ -19,31 +20,43 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
 def detect_potholes(image_path):
-    """Basic pothole detection using image processing"""
+    """Improved pothole detection with better filtering"""
     img = cv2.imread(image_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    # Edge detection
-    edges = cv2.Canny(gray, 100, 200)
+    # Apply blur to reduce noise
+    blurred = cv2.GaussianBlur(gray, (7, 7), 1.5)
     
-    # Find contours
-    contours, _ = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    # Adaptive thresholding works better than Canny for potholes
+    thresh = cv2.adaptiveThreshold(blurred, 255, 
+                                 cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+                                 cv2.THRESH_BINARY_INV, 11, 2)
     
-    # Filter contours that could be potholes
+    # Morphological operations to clean up
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
+    cleaned = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+    
+    contours, _ = cv2.findContours(cleaned, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
     potholes = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
-        if 100 < area < 50000:  # Size range for potholes
-            x,y,w,h = cv2.boundingRect(cnt)
-            aspect_ratio = float(w)/h
-            if 0.2 < aspect_ratio < 5:  # Reasonable aspect ratios
-                potholes.append(cnt)
+        perimeter = cv2.arcLength(cnt, True)
+        
+        # More strict criteria
+        if 500 < area < 50000:  # Adjusted size range
+            circularity = 4 * np.pi * area / (perimeter ** 2)
+            if 0.2 < circularity < 1.2:  # Potholes are somewhat circular
+                x,y,w,h = cv2.boundingRect(cnt)
+                aspect_ratio = float(w)/h
+                if 0.5 < aspect_ratio < 2:  # More square-like ratios
+                    potholes.append(cnt)
     
-    # Draw bounding boxes
+    # Draw results
     for cnt in potholes:
         x,y,w,h = cv2.boundingRect(cnt)
         cv2.rectangle(img, (x,y), (x+w,y+h), (0,0,255), 2)
-        cv2.putText(img, 'Pothole', (x,y-10), 
+        cv2.putText(img, f'Pothole {len(potholes)}', (x,y-10), 
                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
     
     return img, len(potholes)
@@ -73,7 +86,8 @@ def home():
             print(f"Detected {pothole_count} potential potholes")
             return render_template("result.html",
                                 original_img=filename,
-                                result_img=filename)
+                                result_img=filename,
+                                count=pothole_count)
                                 
         except Exception as e:
             print("Error:", e)
