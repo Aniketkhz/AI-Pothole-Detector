@@ -22,15 +22,15 @@ def detect_potholes(image_path):
     img = cv2.imread(image_path)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
-    # Apply blur to reduce noise
+    
     blurred = cv2.GaussianBlur(gray, (7, 7), 1.5)
     
-    # Adaptive thresholding works better than Canny for potholes
+    
     thresh = cv2.adaptiveThreshold(blurred, 255, 
                                  cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                  cv2.THRESH_BINARY_INV, 11, 2)
     
-    # Morphological operations to clean up
+    
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5,5))
     cleaned = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
     
