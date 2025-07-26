@@ -8,14 +8,12 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-# Configuration
 BASE_DIR = Path(__file__).parent
 app.config.update({
     'UPLOAD_FOLDER': BASE_DIR / 'static' / 'uploads',
     'RESULT_FOLDER': BASE_DIR / 'static' / 'results'
 })
 
-# Create directories
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['RESULT_FOLDER'], exist_ok=True)
 
@@ -76,10 +74,10 @@ def home():
             upload_path = app.config['UPLOAD_FOLDER'] / filename
             file.save(str(upload_path))
             
-            # Process image
+        
             result_img, pothole_count = detect_potholes(str(upload_path))
             
-            # Save result
+
             result_path = app.config['RESULT_FOLDER'] / filename
             cv2.imwrite(str(result_path), result_img)
             

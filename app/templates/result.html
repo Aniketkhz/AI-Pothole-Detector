@@ -3,21 +3,43 @@
 <head>
     <title>Results</title>
     <style>
-        body { font-family: Arial; text-align: center; margin-top: 30px; }
-        img { border: 1px solid #ddd; margin: 10px; max-width: 500px; }
-        a { display: inline-block; margin-top: 20px; color: #4CAF50; }
+        body { font-family: Arial; padding: 20px; }
+        .container { display: flex; gap: 20px; }
+        .image-box { flex: 1; border: 1px solid #ddd; padding: 10px; }
+        img { max-width: 100%; height: auto; }
+        .btn { display: inline-block; margin-top: 20px; padding: 10px 20px; 
+               background: #4CAF50; color: white; text-decoration: none; }
+        .count { 
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .error { color: red; }
     </style>
 </head>
 <body>
-    <h1>Detection Results</h1>
-    <div>
-        <h3>Original Image:</h3>
-        <img src="{{ url_for('static', filename=original_img.split('static/')[1]) }}">
+    <h1>Pothole Detection Results</h1>
+    
+    <div class="count">
+        Detected count pothole(s)
     </div>
-    <div>
-        <h3>Processed Image:</h3>
-        <img src="{{ url_for('static', filename=result_img.split('static/')[1]) }}">
+    
+    <div class="container">
+        <div class="image-box">
+            <h3>Original Image</h3>
+            
+                <img src="C:\Users\anike\AI-Pothole-Detector\app\static\uploads\istockphoto-1268318029-612x612.jpg" alt="Original Image">
+                 
+        </div>
+        <div class="image-box">
+            <h3>Processed Image</h3>
+            
+                <img src="C:\Users\anike\AI-Pothole-Detector\app\static\results\istockphoto-1268318029-612x612.jpg" alt="Processed Image">
+                 
+        </div>
     </div>
-    <a href="/">← Upload Another Image</a>
+    <a href="/" class="btn">Try Another Image</a>
 </body>
 </html>
