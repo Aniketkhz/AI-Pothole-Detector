@@ -8,7 +8,7 @@ model = YOLO('runs/detect/train17/weights/best.pt')
 results = model.predict(
     source='data/images/val',
     save=True,  # Save results
-    conf=0.5,   # Confidence threshold
+    conf=0.8,   # Confidence threshold
     show=True   # Display results
 )
 
