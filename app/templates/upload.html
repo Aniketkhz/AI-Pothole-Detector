@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Pothole Image</title>
+    <style>
+        body { font-family: Arial; text-align: center; margin-top: 50px; }
+        .container { max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚧 Pothole Detector</h2>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept="image/*" required>
+            <br><br>
+            <button type="submit">Detect Potholes</button>
+        </form>
+    </div>
+</body>
+</html>
