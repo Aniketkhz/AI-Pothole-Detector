@@ -1,0 +1,4 @@
+﻿train: C:/Users/anike/AI-Pothole-Detector/data/images/train
+val: C:/Users/anike/AI-Pothole-Detector/data/images/val
+nc: 1
+names: ['pothole']
