@@ -38,4 +38,4 @@ if __name__ == "__main__":
     if not weights.exists():
         raise FileNotFoundError(f"Missing weights at {weights}")
     
-    train_model()..
+    train_model()...
