@@ -11,7 +11,7 @@
 
 3. Dataset preparation instructions (how to structure images/labels)
 
-    Training command example:
+    Training command example:-
     bash
     python train.py --epochs 100 --batch 8 --device cpu
 
